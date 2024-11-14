@@ -17,8 +17,8 @@ export interface ReactDocumentPIPProps {
 }
 
 export interface ReactDocumentPIPHandle {
-	Open: () => Promise<boolean>
-	Close: () => boolean
+	open: () => Promise<boolean>
+	close: () => boolean
 }
 
 const ReactDocumentPIP = forwardRef<
@@ -75,8 +75,8 @@ const ReactDocumentPIP = forwardRef<
 	}, [])
 
 	useImperativeHandle(ref, () => ({
-		Open,
-		Close,
+		open: Open,
+		close: Close,
 	}))
 
 	return Container ? createPortal(children, Container) : null

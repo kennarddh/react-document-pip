@@ -16,6 +16,8 @@ export interface ReactDocumentPIPProps {
 	allowReopen?: boolean
 	disallowReturnToOpener?: boolean
 	preferInitialWindowPlacement?: boolean
+	width?: number
+	height?: number
 }
 
 export interface ReactDocumentPIPHandle {
@@ -34,6 +36,8 @@ const ReactDocumentPIP = forwardRef<
 		allowReopen = false,
 		disallowReturnToOpener = false,
 		preferInitialWindowPlacement = false,
+		width = 200,
+		height = 200,
 	},
 	ref,
 ) {
@@ -138,8 +142,8 @@ const ReactDocumentPIP = forwardRef<
 			return false
 
 		const pipWindow = await window.documentPictureInPicture?.requestWindow({
-			width: 200,
-			height: 200,
+			width,
+			height,
 			disallowReturnToOpener,
 			preferInitialWindowPlacement,
 		})
@@ -159,8 +163,10 @@ const ReactDocumentPIP = forwardRef<
 		ReloadPIPWindowStyles,
 		allowReopen,
 		disallowReturnToOpener,
+		height,
 		onClose,
 		preferInitialWindowPlacement,
+		width,
 	])
 
 	const Close = useCallback(() => {

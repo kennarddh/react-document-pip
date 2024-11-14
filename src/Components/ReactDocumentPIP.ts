@@ -79,7 +79,7 @@ const ReactDocumentPIP = forwardRef<
 				window.documentPictureInPicture.window.document.head.appendChild(
 					style,
 				)
-			} catch (e) {
+			} catch {
 				const link = document.createElement('link')
 
 				link.rel = 'stylesheet'

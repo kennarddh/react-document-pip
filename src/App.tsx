@@ -24,7 +24,9 @@ const PIPSet: FC = () => {
 				onClick={async () => {
 					console.log(
 						'Open PIP with handle',
-						await ReactDocumentPIPRef.current?.open(),
+						await ReactDocumentPIPRef.current?.open({
+							allowReopen: true,
+						}),
 					)
 				}}
 			>

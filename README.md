@@ -2,8 +2,8 @@
 
 ## Todo
 
--   [ ] Configurable width and height via props
--   [ ] Override config via open method parameters
+-   [x] Configurable width and height via props
+-   [x] Override config via open method parameters
 -   [ ] Hook to control, listen to events, get state of the window with some kind of data link references variable passed to component from hook
 
 ## Guide

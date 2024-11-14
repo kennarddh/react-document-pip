@@ -9,10 +9,7 @@ import {
 
 import { createPortal } from 'react-dom'
 
-export interface ReactDocumentPIPProps {
-	children: ReactNode
-	onClose?: (event: PageTransitionEvent) => void
-	onOpen?: (event: DocumentPictureInPictureEvent) => void
+export interface ReactDocumentPIPOptions {
 	allowReopen?: boolean
 	disallowReturnToOpener?: boolean
 	preferInitialWindowPlacement?: boolean
@@ -20,8 +17,14 @@ export interface ReactDocumentPIPProps {
 	height?: number
 }
 
+export interface ReactDocumentPIPProps extends ReactDocumentPIPOptions {
+	children: ReactNode
+	onClose?: (event: PageTransitionEvent) => void
+	onOpen?: (event: DocumentPictureInPictureEvent) => void
+}
+
 export interface ReactDocumentPIPHandle {
-	open: () => Promise<boolean>
+	open: (overrideOptions?: ReactDocumentPIPOptions) => Promise<boolean>
 	close: () => boolean
 }
 
@@ -137,37 +140,48 @@ const ReactDocumentPIP = forwardRef<
 		return () => observer.disconnect()
 	}, [ReloadPIPWindowStyles])
 
-	const Open = useCallback(async () => {
-		if (window.documentPictureInPicture?.window && !allowReopen)
-			return false
+	const Open = useCallback(
+		async (overrideOptions: ReactDocumentPIPOptions = {}) => {
+			if (
+				window.documentPictureInPicture?.window &&
+				!(overrideOptions.allowReopen ?? allowReopen)
+			)
+				return false
 
-		const pipWindow = await window.documentPictureInPicture?.requestWindow({
-			width,
-			height,
+			const pipWindow =
+				await window.documentPictureInPicture?.requestWindow({
+					width: overrideOptions.width ?? width,
+					height: overrideOptions.height ?? height,
+					disallowReturnToOpener:
+						overrideOptions.disallowReturnToOpener ??
+						disallowReturnToOpener,
+					preferInitialWindowPlacement:
+						overrideOptions.preferInitialWindowPlacement ??
+						preferInitialWindowPlacement,
+				})
+
+			if (!pipWindow) return false
+
+			pipWindow?.addEventListener('pagehide', event => {
+				onClose?.(event)
+			})
+
+			ReloadPIPWindowStyles()
+
+			SetContainer(pipWindow?.document.body ?? null)
+
+			return true
+		},
+		[
+			ReloadPIPWindowStyles,
+			allowReopen,
 			disallowReturnToOpener,
+			height,
+			onClose,
 			preferInitialWindowPlacement,
-		})
-
-		if (!pipWindow) return false
-
-		pipWindow?.addEventListener('pagehide', event => {
-			onClose?.(event)
-		})
-
-		ReloadPIPWindowStyles()
-
-		SetContainer(pipWindow?.document.body ?? null)
-
-		return true
-	}, [
-		ReloadPIPWindowStyles,
-		allowReopen,
-		disallowReturnToOpener,
-		height,
-		onClose,
-		preferInitialWindowPlacement,
-		width,
-	])
+			width,
+		],
+	)
 
 	const Close = useCallback(() => {
 		if (!window.documentPictureInPicture) return false

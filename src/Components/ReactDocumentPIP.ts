@@ -76,6 +76,7 @@ const ReactDocumentPIP = forwardRef<
 				style.dataset['injectedPipStyle'] = 'true'
 
 				style.textContent = cssRules
+
 				window.documentPictureInPicture.window.document.head.appendChild(
 					style,
 				)
@@ -124,7 +125,7 @@ const ReactDocumentPIP = forwardRef<
 		})
 
 		observer.observe(document, {
-			attributes: true,
+			attributes: false,
 			subtree: true,
 			childList: true,
 		})

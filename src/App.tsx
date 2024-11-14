@@ -12,14 +12,13 @@ const StyledPIPTitle = styled.h2`
 	color: green;
 `
 
-const App: FC = () => {
+const PIPSet: FC = () => {
 	const [IsOpen, SetIsOpen] = useState(false)
 
 	const ReactDocumentPIPRef = useRef<ReactDocumentPIPHandle>(null)
 
 	return (
-		<div>
-			<h1>Document Picture In Picture</h1>
+		<>
 			<p>Currently {IsOpen ? 'opened' : 'closed'}</p>
 			<button
 				onClick={async () => {
@@ -61,6 +60,15 @@ const App: FC = () => {
 					soluta nam modi doloremque quas.
 				</p>
 			</ReactDocumentPIP>
+		</>
+	)
+}
+
+const App: FC = () => {
+	return (
+		<div>
+			<h1>Document Picture In Picture</h1>
+			<PIPSet />
 		</div>
 	)
 }

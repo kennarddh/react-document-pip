@@ -42,6 +42,46 @@ const PIPSet: FC = () => {
 			>
 				Close!
 			</button>
+			<button
+				onClick={() =>
+					console.log(
+						'ResizeBy X PIP with handle',
+						ReactDocumentPIPRef.current?.resizeBy(10, 0),
+					)
+				}
+			>
+				Resize X by 10!
+			</button>
+			<button
+				onClick={() =>
+					console.log(
+						'ResizeBy Y PIP with handle',
+						ReactDocumentPIPRef.current?.resizeBy(0, 10),
+					)
+				}
+			>
+				Resize Y by 10!
+			</button>
+			<button
+				onClick={() =>
+					console.log(
+						'ResizeTo X PIP with handle',
+						ReactDocumentPIPRef.current?.resizeTo(200, 0),
+					)
+				}
+			>
+				Resize X to 200!
+			</button>
+			<button
+				onClick={() =>
+					console.log(
+						'ResizeTo Y PIP with handle',
+						ReactDocumentPIPRef.current?.resizeTo(0, 200),
+					)
+				}
+			>
+				Resize Y to 200!
+			</button>
 			<ReactDocumentPIP
 				ref={ReactDocumentPIPRef}
 				onOpen={event => {

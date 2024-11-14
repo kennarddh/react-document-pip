@@ -26,6 +26,8 @@ export interface ReactDocumentPIPProps extends ReactDocumentPIPOptions {
 export interface ReactDocumentPIPHandle {
 	open: (overrideOptions?: ReactDocumentPIPOptions) => Promise<boolean>
 	close: () => boolean
+	resizeBy: (x: number, y: number) => boolean
+	resizeTo: (x: number, y: number) => boolean
 }
 
 const ReactDocumentPIP = forwardRef<
@@ -193,9 +195,27 @@ const ReactDocumentPIP = forwardRef<
 		return true
 	}, [])
 
+	const ResizeBy = useCallback((x: number, y: number) => {
+		if (!window.documentPictureInPicture) return false
+
+		window.documentPictureInPicture?.window?.resizeBy(x, y)
+
+		return true
+	}, [])
+
+	const ResizeTo = useCallback((x: number, y: number) => {
+		if (!window.documentPictureInPicture) return false
+
+		window.documentPictureInPicture?.window?.resizeBy(x, y)
+
+		return true
+	}, [])
+
 	useImperativeHandle(ref, () => ({
 		open: Open,
 		close: Close,
+		resizeBy: ResizeBy,
+		resizeTo: ResizeTo,
 	}))
 
 	return Container ? createPortal(children, Container) : null

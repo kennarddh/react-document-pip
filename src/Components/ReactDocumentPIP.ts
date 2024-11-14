@@ -14,6 +14,8 @@ export interface ReactDocumentPIPProps {
 	onClose?: (event: PageTransitionEvent) => void
 	onOpen?: (event: DocumentPictureInPictureEvent) => void
 	allowReopen?: boolean
+	disallowReturnToOpener?: boolean
+	preferInitialWindowPlacement?: boolean
 }
 
 export interface ReactDocumentPIPHandle {
@@ -25,7 +27,14 @@ const ReactDocumentPIP = forwardRef<
 	ReactDocumentPIPHandle,
 	ReactDocumentPIPProps
 >(function ReactDocumentPIP(
-	{ children, onClose, onOpen, allowReopen = false },
+	{
+		children,
+		onClose,
+		onOpen,
+		allowReopen = false,
+		disallowReturnToOpener = false,
+		preferInitialWindowPlacement = false,
+	},
 	ref,
 ) {
 	const [Container, SetContainer] = useState<HTMLElement | null>(null)
@@ -130,6 +139,8 @@ const ReactDocumentPIP = forwardRef<
 		const pipWindow = await window.documentPictureInPicture?.requestWindow({
 			width: 200,
 			height: 200,
+			disallowReturnToOpener,
+			preferInitialWindowPlacement,
 		})
 
 		if (!pipWindow) return false
@@ -143,7 +154,13 @@ const ReactDocumentPIP = forwardRef<
 		SetContainer(pipWindow?.document.body ?? null)
 
 		return true
-	}, [ReloadPIPWindowStyles, allowReopen, onClose])
+	}, [
+		ReloadPIPWindowStyles,
+		allowReopen,
+		disallowReturnToOpener,
+		onClose,
+		preferInitialWindowPlacement,
+	])
 
 	const Close = useCallback(() => {
 		if (!window.documentPictureInPicture) return false

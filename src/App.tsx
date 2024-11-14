@@ -1,8 +1,16 @@
 import { FC, useRef, useState } from 'react'
 
+import styled from 'styled-components'
+
 import ReactDocumentPIP, {
 	ReactDocumentPIPHandle,
 } from 'Components/ReactDocumentPIP'
+
+import './style.css'
+
+const StyledPIPTitle = styled.h2`
+	color: green;
+`
 
 const App: FC = () => {
 	const [IsOpen, SetIsOpen] = useState(false)
@@ -46,7 +54,12 @@ const App: FC = () => {
 					SetIsOpen(false)
 				}}
 			>
-				<h2>It&apos;s real!!!</h2>
+				<StyledPIPTitle>It&apos;s real!!!</StyledPIPTitle>
+				<p className='pipParagraph'>
+					Lorem ipsum dolor sit amet consectetur adipisicing elit.
+					Tempora aliquam unde rem repudiandae assumenda dolorum,
+					soluta nam modi doloremque quas.
+				</p>
 			</ReactDocumentPIP>
 		</div>
 	)

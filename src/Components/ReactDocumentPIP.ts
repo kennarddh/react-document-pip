@@ -44,6 +44,85 @@ const ReactDocumentPIP = forwardRef<
 			)
 	}, [onOpen])
 
+	const ReloadPIPWindowStyles = useCallback(() => {
+		if (!window.documentPictureInPicture) return
+
+		const previousStyleNodes =
+			window.documentPictureInPicture.window.document.querySelectorAll(
+				'[data-injected-pip-style]',
+			)
+
+		for (const previousStyleNode of previousStyleNodes) {
+			previousStyleNode.remove()
+		}
+
+		for (const styleSheet of document.styleSheets) {
+			try {
+				const cssRules = [...styleSheet.cssRules]
+					.map(rule => rule.cssText)
+					.join('')
+
+				const style = document.createElement('style')
+
+				style.dataset['injectedPipStyle'] = 'true'
+
+				style.textContent = cssRules
+				window.documentPictureInPicture.window.document.head.appendChild(
+					style,
+				)
+			} catch (e) {
+				const link = document.createElement('link')
+
+				link.rel = 'stylesheet'
+				link.type = styleSheet.type
+				link.dataset['injectedPipStyle'] = 'true'
+
+				if (styleSheet.media) link.media = styleSheet.media.toString()
+				if (styleSheet.href) link.href = styleSheet.href
+
+				window.documentPictureInPicture.window.document.head.appendChild(
+					link,
+				)
+			}
+		}
+	}, [])
+
+	useEffect(() => {
+		const anyStyleChanged = (mutation: MutationRecord) => {
+			if (mutation.target.nodeName === 'STYLE') return true
+
+			for (const addedNode of mutation.addedNodes) {
+				if (addedNode.nodeName === 'STYLE') return true
+			}
+
+			for (const removedNode of mutation.removedNodes) {
+				if (removedNode.nodeName === 'STYLE') return true
+			}
+
+			return false
+		}
+
+		const observer = new MutationObserver(mutationList => {
+			for (const mutation of mutationList) {
+				if (mutation.type !== 'childList') continue
+
+				if (anyStyleChanged(mutation)) {
+					ReloadPIPWindowStyles()
+
+					break
+				}
+			}
+		})
+
+		observer.observe(document, {
+			attributes: true,
+			subtree: true,
+			childList: true,
+		})
+
+		return () => observer.disconnect()
+	}, [ReloadPIPWindowStyles])
+
 	const Open = useCallback(async () => {
 		if (window.documentPictureInPicture?.window && !allowReopen)
 			return false
@@ -59,10 +138,12 @@ const ReactDocumentPIP = forwardRef<
 			onClose?.(event)
 		})
 
+		ReloadPIPWindowStyles()
+
 		SetContainer(pipWindow?.document.body ?? null)
 
 		return true
-	}, [allowReopen, onClose])
+	}, [ReloadPIPWindowStyles, allowReopen, onClose])
 
 	const Close = useCallback(() => {
 		if (!window.documentPictureInPicture) return false
